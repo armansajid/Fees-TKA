@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0f766e"/>
+<meta name="description" content="Academy Fee Manager: student fees, expenses, teacher salaries, advances and monthly cash balance."/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="Fee Manager"/>
+<title>Academy Fee Manager</title>
+<style>
+:root{--p:#0f766e;--p2:#14b8a6;--p3:#e6f6f4;--bg:#f1f7f7;--ink:#0f2a2a;--mut:#5f7c7a;--line:#dfeaea;--ok:#15803d;--okbg:#dcfce7;--wn:#a16207;--wnbg:#fef3c7;--bad:#b91c1c;--nav:78px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{margin:0;letter-spacing:-.01em}
+h3{font-size:16px;margin-bottom:8px}
+p{margin:6px 0}
+.muted{color:var(--mut)}.small{font-size:13px}.center{text-align:center}
+.eyebrow{margin:0;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.bignum{font-size:30px;font-weight:800;margin:4px 0;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.card{background:#fff;border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px rgba(15,42,42,.04),0 8px 24px rgba(15,42,42,.06);border:1px solid rgba(15,118,110,.06)}
+.sumcard{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.grid2{display:grid}
+@media(min-width:760px){.grid2{grid-template-columns:1fr 1fr;gap:14px}}
+.inline{display:flex;gap:10px;align-items:flex-end}.inline.wrap{flex-wrap:wrap}.grow{flex:1;min-width:0}
+.head-row{display:flex;justify-content:space-between;align-items:center;margin:18px 2px 8px;gap:10px}
+.head-row h3{margin:0}
+.btn{border:0;border-radius:12px;padding:11px 16px;font-weight:600;cursor:pointer;background:var(--p3);color:var(--p);transition:transform .12s,box-shadow .2s,filter .2s;white-space:nowrap}
+.btn:hover{filter:brightness(.98)}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn.primary{background:linear-gradient(135deg,var(--p2),var(--p));color:#fff;box-shadow:0 6px 16px rgba(15,118,110,.25)}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn.soft{background:var(--p3);color:var(--p)}
+.btn.danger{background:#dc2626;color:#fff}
+.btn.glass{background:rgba(255,255,255,.22);color:#fff}
+.btn.sm{padding:8px 11px;font-size:13px;border-radius:10px}
+.link{background:none;border:0;color:var(--p);font-weight:600;cursor:pointer;padding:4px 0;font-size:13px}
+.link.del,.danger-t{color:var(--bad)}
+.icon-btn{background:#f1f5f5;border:0;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:14px}
+.pill{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+.p-full{background:var(--okbg);color:var(--ok)}
+.p-partial{background:var(--wnbg);color:var(--wn)}
+.p-unpaid{background:#eef2f2;color:#475569}
+.p-free{background:#eef2f2;color:#8aa0a0}
+.chip{font-size:12px;font-weight:700;padding:6px 11px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.chip::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.chip.ok{background:var(--okbg);color:var(--ok)}
+.chip.syncing{background:#e0f2fe;color:#0369a1}
+.chip.syncing::before{animation:pulse 1s infinite}
+.chip.offline{background:#fee2e2;color:var(--bad)}
+@keyframes pulse{50%{opacity:.25}}
+@keyframes fade{from{opacity:0}}
+@keyframes up{from{transform:translateY(30px);opacity:0}}
+.head{position:sticky;top:0;z-index:30;background:linear-gradient(var(--bg) 82%,rgba(241,247,247,0))}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 4px;gap:10px}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,var(--p2),var(--p));color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;box-shadow:0 6px 16px rgba(15,118,110,.3);flex:none}
+.brand h1{font-size:17px;line-height:1.1}
+.brand small{color:var(--mut);font-size:12px}
+.pbar{display:flex;gap:10px;padding:6px 16px 10px}
+.pbar label{flex:1;font-size:11px;gap:4px;text-transform:uppercase;letter-spacing:.04em}
+.pbar select{padding:9px 10px;border-radius:12px;background:#fff;border:1px solid var(--line);font-weight:700;font-size:14px;text-transform:none;letter-spacing:0;color:var(--ink)}
+main{padding:4px 16px calc(var(--nav) + 40px);max-width:1100px;margin:0 auto}
+.sidebar{display:none}
+.bottom{position:fixed;left:0;right:0;bottom:0;height:var(--nav);background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(7,1fr);padding:6px 4px env(safe-area-inset-bottom);z-index:40;box-shadow:0 -6px 20px rgba(15,42,42,.06)}
+.bottom button,.side-nav button{border:0;background:none;cursor:pointer;color:var(--mut)}
+.bottom button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:10px;font-weight:600;border-radius:14px;min-width:0}
+.bottom button.on{color:var(--p);background:var(--p3)}
+.bottom .ico{font-size:17px;line-height:1}
+.side-nav{display:flex;flex-direction:column;gap:6px;margin-top:22px}
+.side-nav button{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;font-weight:600;text-align:left;font-size:15px}
+.side-nav button.on{background:var(--p3);color:var(--p)}
+.side-foot{margin-top:auto;color:var(--mut);font-size:12px}
+@media(min-width:900px){
+ :root{--nav:0px}
+ .sidebar{display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;width:248px;background:#fff;border-right:1px solid var(--line);padding:22px 16px;z-index:40}
+ .shell{margin-left:248px}
+ .bottom{display:none}
+ .topbar .brand{display:none}
+ main{padding:8px 28px 40px}
+ .sticky-foot{bottom:14px!important}
+ .toast{bottom:24px!important}
+}
+.overlay{position:fixed;inset:0;background:rgba(8,33,33,.45);backdrop-filter:blur(3px);display:flex;align-items:flex-end;justify-content:center;z-index:50;animation:fade .2s}
+.sheet{background:#fff;width:100%;max-width:540px;max-height:92vh;border-radius:24px 24px 0 0;display:flex;flex-direction:column;animation:up .25s ease;box-shadow:0 -10px 40px rgba(0,0,0,.2)}
+.sheet.sm{max-width:420px}
+@media(min-width:640px){.overlay{align-items:center}.sheet{border-radius:24px}}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;padding:16px 18px 6px}
+.sheet-head h3{font-size:18px;margin:0}
+.sheet-body{padding:8px 18px;overflow:auto;display:flex;flex-direction:column;gap:12px}
+.sheet-foot{display:flex;gap:10px;justify-content:flex-end;padding:14px 18px 20px;border-top:1px solid var(--line)}
+.sheet-foot .btn{min-width:110px}
+label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--mut)}
+input,select,textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);outline:none;font-size:15px}
+input:focus,select:focus,textarea:focus{border-color:var(--p2);box-shadow:0 0 0 3px rgba(20,184,166,.18)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.netbox{background:var(--p3);border-radius:14px;padding:12px 14px;font-size:14px;color:var(--ink)}
+.warnTxt{display:block;color:var(--bad);font-weight:600;margin-top:4px}
+.err{color:var(--bad);font-weight:600;font-size:14px;margin:0}
+.advinfo{margin:-4px 0 0;font-size:13px;color:var(--p);font-weight:600}
+.hint{font-size:13px;color:var(--mut);margin:0}
+.toast{position:fixed;left:50%;bottom:calc(var(--nav) + 18px);transform:translate(-50%,16px);background:#0f2a2a;color:#fff;padding:12px 18px;border-radius:14px;font-weight:600;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:70;max-width:92vw;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.err{background:var(--bad)}
+.toast.info{background:var(--p)}
+.hero{background:linear-gradient(135deg,#0f766e 0%,#14b8a6 100%);color:#fff;border:0;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-50px;top:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.12)}
+.hero .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;position:relative;z-index:1}
+.hero .big{font-size:34px;margin:4px 0 12px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.hero .big.neg{color:#fecaca}
+.hero .lines{position:relative;z-index:1}
+.hero .lines div{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.18);font-size:14px}
+.hero .lines .total{border:0;font-weight:800;font-size:16px;padding-top:12px}
+.hero .lines .neg b{color:#fecaca}
+.hero .lines .pos b{color:#bbf7d0}
+.hero .lines b{font-variant-numeric:tabular-nums}
+.hero .reset{background:none;border:0;color:#ecfeff;text-decoration:underline;font-size:13px;cursor:pointer;margin-top:10px;position:relative;z-index:1}
+.bigline{font-size:15px;margin:4px 0}
+.bigline b{font-size:22px;font-variant-numeric:tabular-nums}
+.bar{height:10px;background:#e7f1f1;border-radius:99px;overflow:hidden;margin:8px 0}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--p2),var(--p));border-radius:99px;transition:width .4s}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:6px 0;font-size:14px}
+.kv b{font-variant-numeric:tabular-nums;text-align:right}
+.bar-row{margin-bottom:10px}
+.list-plain{list-style:none;padding:0;margin:8px 0}
+.list-plain li{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.counts{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.counts span{padding:6px 10px;border-radius:10px;font-size:13px;font-weight:700}
+.c-full{background:var(--okbg);color:var(--ok)}
+.c-partial{background:var(--wnbg);color:var(--wn)}
+.c-unpaid{background:#eef2f2;color:#475569}
+.search{padding:12px 14px}
+.filters{display:flex;gap:8px;overflow-x:auto;padding:4px 0 12px}
+.chip-f{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;font-weight:600;font-size:13px;white-space:nowrap;cursor:pointer}
+.chip-f.on{background:var(--p);color:#fff;border-color:var(--p)}
+.chip-f b{margin-left:4px}
+.fee-list{display:flex;flex-direction:column;gap:10px}
+.frow{background:#fff;border-radius:16px;padding:14px;box-shadow:0 1px 2px rgba(15,42,42,.04),0 6px 16px rgba(15,42,42,.05);border-left:4px solid transparent}
+.frow.st-full{border-left-color:#22c55e;background:linear-gradient(90deg,#f0fdf4,#fff 45%)}
+.frow.st-partial{border-left-color:#eab308;background:linear-gradient(90deg,#fefce8,#fff 45%)}
+.fr-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.fr-pay{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.amt-in{width:130px;padding:9px 10px;font-weight:700;font-variant-numeric:tabular-nums}
+.sticky-foot{position:sticky;bottom:calc(var(--nav) + 10px);margin-top:14px;background:linear-gradient(135deg,#0f766e,#14b8a6);color:#fff;border-radius:18px;padding:12px 14px;display:flex;justify-content:space-between;gap:10px;box-shadow:0 12px 30px rgba(15,118,110,.35);z-index:5}
+.sticky-foot>div{display:flex;flex-direction:column;font-size:12px;opacity:.92;min-width:0}
+.sticky-foot b{font-size:16px;opacity:1;font-variant-numeric:tabular-nums}
+.li{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.li:last-child{border-bottom:0}
+.li.arch{opacity:.6}
+.li-main{min-width:0}
+.name{font-weight:700}
+.meta{color:var(--mut);font-size:13px}
+.li-right{text-align:right;flex:none}
+.amt{font-size:16px;font-variant-numeric:tabular-nums}
+.mini{display:flex;gap:12px;justify-content:flex-end;margin-top:4px}
+.tag{background:var(--p3);color:var(--p);padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.cards{display:grid;gap:12px}
+@media(min-width:760px){.cards{grid-template-columns:1fr 1fr}}
+.tcard.arch{opacity:.65}
+.tc-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.row-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.note-item{padding:14px 0;border-bottom:1px solid var(--line)}
+.note-item:last-child{border-bottom:0}
+.kind{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:4px 9px;border-radius:8px}
+.kind.advance{background:#fff7ed;color:#c2410c}
+.kind.general{background:#eef2ff;color:#4338ca}
+details.hist{padding:0;overflow:hidden}
+details summary{padding:14px 16px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}
+details summary::-webkit-details-marker{display:none}
+details[open] summary{border-bottom:1px solid var(--line)}
+.hist .body{padding:6px 16px 12px}
+.empty{text-align:center;color:var(--mut);padding:26px 10px;font-size:14px}
+.netrow{display:flex;gap:10px;flex-wrap:wrap}
+.sumrow{display:flex;justify-content:space-between;gap:10px}
+#printArea{display:none}
+@media print{
+ body *{visibility:hidden!important}
+ #printArea,#printArea *{visibility:visible!important}
+ #printArea{display:block!important;position:absolute;left:0;top:0;width:100%;padding:20px;color:#000;background:#fff}
+ #printArea table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:12px}
+ #printArea td,#printArea th{border:1px solid #999;padding:4px 6px;text-align:left}
+}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="brand"><div class="logo">AF</div><div><h1>Academy Fees</h1><small>Fee Manager</small></div></div>
+  <nav class="side-nav" id="sideNav"></nav>
+  <p class="side-foot">Shared live across all devices</p>
+</aside>
+
+<div class="shell">
+  <header class="head">
+    <div class="topbar">
+      <div class="brand"><div class="logo">AF</div><div><h1 id="pageTitle">Dashboard</h1><small>Academy Fee Manager</small></div></div>
+      <span class="chip ok" id="sync">Up to date</span>
+    </div>
+    <div class="pbar" id="pbar">
+      <label>Session<select id="sSel"></select></label>
+      <label>Month<select id="mSel"></select></label>
+    </div>
+  </header>
+  <main id="view"></main>
+</div>
+
+<nav class="bottom" id="bottomNav"></nav>
+<div id="modalRoot"></div>
+<div id="toast" class="toast"></div>
+<div id="printArea"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+(function(){
+'use strict';
+
+/* ================= CLOUD CONFIG =================
+   Paste your Firebase web app config below (Firebase console > Project settings > Your apps).
+   Firestore rules must allow open read/write, e.g.:
+   rules_version = '2'; service cloud.firestore { match /databases/{db}/documents { match /{document=**} { allow read, write: if true; } } }
+   While this is empty the app runs on this device only. */
+const FIREBASE_CONFIG={apiKey:'',authDomain:'',projectId:'',storageBucket:'',messagingSenderId:'',appId:''};
+
+const APP_KEY='academy_fee_manager_v1';
+const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const FY=[7,8,9,10,11,12,1,2,3,4,5,6];
+const CATS=['Rent','Electricity & Utilities','Internet','Stationery & Printing','Marketing','Maintenance','Refreshments','Transport','Other'];
+const COLS=['students','teachers','payments','expenses','salaries','notes','monthMeta','settings'];
+const PERIOD=['dashboard','fees','expenses','teachers','notes'];
+const SCREENS=[['dashboard','Dashboard','🏠'],['fees','Fees','💰'],['expenses','Expenses','🧾'],['teachers','Teachers','👩‍🏫'],['notes','Notes','📝'],['students','Students','🎓'],['settings','Settings','⚙️']];
+const STL={full:'Paid in full',partial:'Partial',unpaid:'Unpaid',free:'No fee'};
+const SEED_STUDENTS=[['Zahid','Pre 9th',0],['Mustafa','Pre 9th',3000],['Abdullah','9th',5000],['Tasawar','9th',2000],['Hamdan','9th',3000],['Nashra','9th',2000],['Ahmed','9th',3000],['Parsa','10th',3000],['Ibad','10th',2000],['Abbas','10th',2000],['Asif','10th',2000],['Nasrullah','11th',4000],['Nafay','11th',4000],['Hassan','11th',3000]];
+
+/* ================= HELPERS ================= */
+const $=s=>document.querySelector(s);
+const root=$('#modalRoot'), view=$('#view'), chipEl=$('#sync'), toastEl=$('#toast');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const r2=n=>Math.round((+n||0)*100)/100;
+const fmt=n=>'PKR '+(Number(n)||0).toLocaleString('en-PK',{minimumFractionDigits:0,maximumFractionDigits:2});
+const sum=(arr,f)=>arr.reduce((a,x)=>a+(+f(x)||0),0);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const ymd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const today=()=>ymd(new Date());
+const mkNow=()=>today().slice(0,7);
+const mkOf=d=>String(d||'').slice(0,7);
+const nextMk=mk=>{let [y,m]=mk.split('-').map(Number);m++;if(m>12){m=1;y++}return `${y}-${String(m).padStart(2,'0')}`};
+const mkLabel=mk=>`${MN[+mk.slice(5)-1]} ${mk.slice(0,4)}`;
+const sessionStart=mk=>{const [y,m]=mk.split('-').map(Number);return m>=7?y:y-1};
+const sessLabel=s=>`${s}-${String((s+1)%100).padStart(2,'0')}`;
+const mkInSession=(s,m)=>`${m>=7?s:s+1}-${String(m).padStart(2,'0')}`;
+const validDate=d=>/^\d{4}-\d{2}-\d{2}$/.test(d||'')&&!isNaN(Date.parse(d));
+const defDate=()=>S.mk===mkNow()?today():S.mk+'-01';
+const byName=(a,b)=>String(a.name||'').localeCompare(String(b.name||''));
+const byDate=(a,b)=>String(a.date||'').localeCompare(String(b.date||''));
+const emptyState=m=>`<div class="empty">${m}</div>`;
+function parseAmt(v,o={}){
+  const zero=o.zero!==false, max=o.max||100000000;
+  const s=String(v??'').trim().replace(/,/g,'');
+  if(s==='')return null;
+  if(!/^\d+(\.\d{1,2})?$/.test(s))return null;
+  const n=Number(s);
+  if(!zero&&n===0)return null;
+  if(n>max)return null;
+  return n;
+}
+function docs(c){return Object.entries(DB[c]||{}).map(([id,d])=>({id,...d}))}
+function activeTeachers(){return docs('teachers').filter(t=>!t.archived).sort(byName)}
+function tName(id){return (DB.teachers[id]&&DB.teachers[id].name)||'Unknown teacher'}
+function sharePct(){const v=DB.settings.main?+DB.settings.main.sharePct:NaN;return isFinite(v)?v:30}
+function advBal(tid,exceptId){
+  let a=0,d=0;
+  Object.entries(DB.notes).forEach(([,n])=>{if(n.kind==='advance'&&n.teacherId===tid)a+=+n.amount||0});
+  Object.entries(DB.salaries).forEach(([id,s])=>{if(s.teacherId===tid&&id!==exceptId)d+=+s.advance||0});
+  return r2(a-d);
+}
+function teacherOptions(sel,ph){
+  return (ph?'<option value="">Choose teacher</option>':'')+docs('teachers').sort(byName).map(t=>`<option value="${t.id}" ${t.id===sel?'selected':''}>${esc(t.name)}${t.archived?' (archived)':''}</option>`).join('');
+}
+function monthOpts(sel,none){
+  const sy=sessionStart(mkNow());
+  let h=none?`<option value="" ${!sel?'selected':''}>No month</option>`:'';
+  for(let y=sy-3;y<=sy+2;y++)FY.forEach(m=>{const k=mkInSession(y,m);h+=`<option value="${k}" ${k===sel?'selected':''}>${MN[m-1]} ${k.slice(0,4)}</option>`});
+  return h;
+}
+
+/* ================= STATE & DATA ================= */
+let DB={};COLS.forEach(c=>DB[c]={});
+const S={screen:'dashboard',mk:mkNow(),ff:'all',fq:'',sq:'',scl:'',sarch:false,nt:'all',nth:'',nsc:'month',nq:''};
+let fb=null,seeded=false,seeding=false,pend={},askRes=null,held=false,toastT=null,deferredPrompt=null;
+
+function seedDocs(){
+  const out=[];
+  SEED_STUDENTS.forEach(([name,cls,fee],i)=>out.push(['students','s'+(i+1),{name,cls,fee,archived:false,createdAt:1700000000000+i}]));
+  [1,2,3].forEach(i=>out.push(['teachers','t'+i,{name:'Teacher '+i,archived:false,createdAt:1700000000000}]));
+  out.push(['settings','main',{sharePct:30}]);
+  return out;
+}
+function persistLocal(){if(!fb){try{localStorage.setItem(APP_KEY,JSON.stringify(DB))}catch(e){}}}
+function loadLocal(){
+  try{const j=JSON.parse(localStorage.getItem(APP_KEY)||'null');if(j)COLS.forEach(c=>DB[c]=j[c]||{})}catch(e){}
+  if(!localStorage.getItem(APP_KEY+'_seeded')){
+    seedDocs().forEach(([c,id,d])=>{DB[c][id]=d});
+    localStorage.setItem(APP_KEY+'_seeded','1');
+    persistLocal();
+  }
+}
+async function seedCloud(){
+  if(!fb||seeded||seeding)return;
+  seeding=true;
+  const ref=fb.collection('meta').doc('seed');
+  try{
+    await fb.runTransaction(async tx=>{
+      const snap=await tx.get(ref);
+      if(snap.exists)return;
+      seedDocs().forEach(([c,id,d])=>tx.set(fb.collection(c).doc(id),d));
+      tx.set(ref,{seededAt:new Date().toISOString()});
+    });
+    seeded=true;
+  }catch(e){console.warn('Seeding will retry when online',e)}
+  seeding=false;
+}
+function listen(){
+  COLS.forEach(c=>{
+    fb.collection(c).onSnapshot({includeMetadataChanges:true},snap=>{
+      const o={};snap.forEach(d=>{o[d.id]=d.data()});
+      DB[c]=o;pend[c]=snap.metadata.hasPendingWrites;
+      render();
+    },err=>{console.error(c,err);toast('Sync problem: '+err.message,'err')});
+  });
+}
+function save(c,id,data){
+  DB[c][id]=data;
+  if(fb)fb.collection(c).doc(id).set(data).catch(e=>toast('Could not save: '+e.message,'err'));
+  else persistLocal();
+  render();
+}
+function removeDoc(c,id){
+  delete DB[c][id];
+  if(fb)fb.collection(c).doc(id).delete().catch(e=>toast('Could not delete: '+e.message,'err'));
+  else persistLocal();
+  render();
+}
+function syncState(){
+  if(!navigator.onLine||!fb)return 'offline';
+  return Object.values(pend).some(Boolean)?'syncing':'ok';
+}
+
+/* ================= CALCULATIONS ================= */
+function feeRows(mk){
+  return docs('students')
+    .filter(s=>!s.archived||DB.payments[s.id+'__'+mk])
+    .sort(byName)
+    .map(s=>{
+      const p=DB.payments[s.id+'__'+mk];
+      const expected=p?(+p.expected||0):(+s.fee||0);
+      const received=p?(+p.received||0):0;
+      const st=expected<=0?'free':received>=expected?'full':received>0?'partial':'unpaid';
+      return {...s,expected,received,left:r2(expected-received),st};
+    });
+}
+function feeSummary(mk){
+  const rows=feeRows(mk);
+  const f={rows,collected:r2(sum(rows,r=>r.received)),expected:r2(sum(rows,r=>r.expected)),full:0,partial:0,unpaid:0};
+  rows.forEach(r=>{if(r.st==='full')f.full++;else if(r.st==='partial')f.partial++;else if(r.st==='unpaid')f.unpaid++});
+  f.pct=sharePct();
+  f.academy=r2(f.collected*f.pct/100);
+  f.pool=r2(f.collected-f.academy);
+  f.teachers=activeTeachers().length;
+  f.each=f.teachers?r2(f.pool/f.teachers):0;
+  return f;
+}
+function balanceFor(target){
+  const A={};const g=k=>A[k]||(A[k]={fees:0,exp:0,net:0,adv:0});
+  Object.values(DB.payments).forEach(p=>{if(p.mk)g(p.mk).fees+=(+p.received||0)});
+  Object.values(DB.expenses).forEach(e=>{if(e.date)g(mkOf(e.date)).exp+=(+e.amount||0)});
+  Object.values(DB.salaries).forEach(s=>{if(s.mk)g(s.mk).net+=(+s.net||0)});
+  Object.values(DB.notes).forEach(n=>{if(n.kind==='advance'&&n.date)g(mkOf(n.date)).adv+=(+n.amount||0)});
+  const keys=[...Object.keys(A),...Object.keys(DB.monthMeta),target].sort();
+  let mk=keys[0],prev=0;
+  for(let i=0;i<2400;i++){
+    const t=A[mk]||{fees:0,exp:0,net:0,adv:0};
+    const ov=DB.monthMeta[mk];
+    const open=ov?r2(+ov.opening||0):prev;
+    const row={mk,open,fees:r2(t.fees),exp:r2(t.exp),net:r2(t.net),adv:r2(t.adv),override:!!ov};
+    row.close=r2(open+row.fees-row.exp-row.net-row.adv);
+    if(mk===target)return row;
+    prev=row.close;mk=nextMk(mk);
+  }
+  return {mk:target,open:0,fees:0,exp:0,net:0,adv:0,close:0,override:false};
+}
+function reportData(){
+  const mk=S.mk;
+  return {
+    b:balanceFor(mk),
+    f:feeSummary(mk),
+    exps:docs('expenses').filter(e=>mkOf(e.date)===mk).sort(byDate),
+    sals:docs('salaries').filter(s=>s.mk===mk).sort(byDate),
+    advs:docs('notes').filter(n=>n.kind==='advance'&&mkOf(n.date)===mk).sort(byDate)
+  };
+}
+function summaryRows(R){
+  const b=R.b;
+  return [['Opening balance',b.open],['Fees collected',b.fees],['Expenses',b.exp],['Net salaries paid',b.net],['Advances given',b.adv],['Closing balance (cash in hand)',b.close],['Expected fees',R.f.expected],['Academy share',R.f.academy],["Teachers' pool",R.f.pool],['Suggested share per teacher',R.f.each]];
+}
+
+/* ================= SAVE HELPERS ================= */
+function saveFee(id,raw){
+  const r=feeRows(S.mk).find(x=>x.id===id);
+  if(!r)return;
+  const s=String(raw??'').trim();
+  const n=s===''?0:parseAmt(s);
+  if(n===null)return toast('Numbers only, for example 1000','err');
+  if(n>r.expected)return toast(`Cannot exceed the monthly fee of ${fmt(r.expected)}`,'err');
+  const pid=id+'__'+S.mk;
+  if(n===0){removeDoc('payments',pid);toast(`${r.name}: payment cleared`)}
+  else{save('payments',pid,{sid:id,mk:S.mk,received:n,expected:r.expected,updatedAt:Date.now()});toast(`${r.name}: ${fmt(n)} saved`)}
+}
+
+/* ================= RENDERING ================= */
+function feeRowHtml(r){
+  const label=r.st==='full'?'Paid in full':r.st==='partial'?`Partial · ${fmt(r.left)} left`:r.st==='unpaid'?'Nothing received':'No fee';
+  return `<div class="frow st-${r.st}">
+    <div class="fr-top"><div><div class="name">${esc(r.name)}</div><div class="meta">${esc(r.cls)} · Monthly fee ${fmt(r.expected)}</div></div><span class="pill p-${r.st}">${label}</span></div>
+    <div class="fr-pay">
+      <input id="amt_${r.id}" class="amt-in" data-hold inputmode="decimal" placeholder="0" value="${r.received?r.received:''}" aria-label="Amount received from ${esc(r.name)}">
+      <button class="btn sm primary" data-act="fee-save" data-id="${r.id}">Save</button>
+      <button class="btn sm soft" data-act="fee-full" data-id="${r.id}" ${r.expected<=0?'disabled':''}>Paid in full</button>
+      <button class="btn sm ghost" data-act="fee-clear" data-id="${r.id}">Clear</button>
+    </div></div>`;
+}
+
+function vDash(){
+  const b=balanceFor(S.mk), f=feeSummary(S.mk);
+  const owed=docs('teachers').map(t=>({t,o:Math.max(0,advBal(t.id))})).filter(x=>x.o>0).sort((a,b)=>b.o-a.o);
+  const totalOwed=r2(sum(owed,x=>x.o));
+  const done=f.expected>0?Math.min(100,f.collected/f.expected*100):0;
+  return `
+  <section class="card hero">
+    <div class="top"><div><p class="eyebrow" style="color:#d1fae5">Cash in hand · ${mkLabel(S.mk)}</p><div class="big ${b.close<0?'neg':''}">${fmt(b.close)}</div></div>
+    <button class="btn glass sm" data-act="open-opening">Opening balance</button></div>
+    <div class="lines">
+      <div><span>Opening balance${b.override?' (manual)':''}</span><b>${fmt(b.open)}</b></div>
+      <div class="pos"><span>+ Fees collected</span><b>${fmt(b.fees)}</b></div>
+      <div class="neg"><span>− Expenses</span><b>${fmt(b.exp)}</b></div>
+      <div class="neg"><span>− Net salaries paid</span><b>${fmt(b.net)}</b></div>
+      <div class="neg"><span>− Advances given</span><b>${fmt(b.adv)}</b></div>
+      <div class="total"><span>= Closing balance</span><b>${fmt(b.close)}</b></div>
+    </div>
+    ${b.override?'<button class="reset" data-act="reset-opening">Reset opening to automatic</button>':''}
+  </section>
+  <section class="grid2">
+    <div class="card"><h3>Fees: collected vs expected</h3>
+      <div class="bigline"><b>${fmt(f.collected)}</b> <span class="muted">of ${fmt(f.expected)}</span></div>
+      <div class="bar"><i style="width:${done}%"></i></div>
+      <div class="counts"><span class="c-full">Paid ${f.full}</span><span class="c-partial">Partial ${f.partial}</span><span class="c-unpaid">Unpaid ${f.unpaid}</span></div>
+    </div>
+    <div class="card"><h3>Academy share and teachers' pool</h3>
+      <div class="kv"><span>Academy share (${f.pct}%)</span><b>${fmt(f.academy)}</b></div>
+      <div class="kv"><span>Teachers' pool</span><b>${fmt(f.pool)}</b></div>
+      <div class="kv"><span>Active teachers</span><b>${f.teachers}</b></div>
+      <div class="kv"><span>Suggested share each</span><b>${f.teachers?fmt(f.each):'—'}</b></div>
+      <ul class="list-plain">${activeTeachers().map(t=>`<li><span>${esc(t.name)}</span><b>${fmt(f.each)}</b></li>`).join('')||'<li><span class="muted">Add teachers in the Teachers tab</span></li>'}</ul>
+      <p class="hint">Reference figures only. Actual payments are recorded under Teachers.</p>
+    </div>
+    <div class="card"><h3>Outstanding teacher advances</h3>
+      <div class="bigline"><b>${fmt(totalOwed)}</b> <span class="muted">total owed</span></div>
+      <ul class="list-plain">${owed.map(x=>`<li><span>${esc(x.t.name)}</span><b>${fmt(x.o)}</b></li>`).join('')||'<li><span class="muted">No outstanding advances</span></li>'}</ul>
+    </div>
+    <div class="card"><h3>Export ${mkLabel(S.mk)}</h3>
+      <p class="muted small">CSV opens in Excel or Google Sheets. PDF opens the print dialog where you can choose "Save as PDF".</p>
+      <div class="inline wrap"><button class="btn primary" data-act="csv">Download CSV</button><button class="btn ghost" data-act="pdf">Export PDF</button></div>
+    </div>
+  </section>`;
+}
+
+function vFees(){
+  const rows=feeRows(S.mk), f=feeSummary(S.mk);
+  const q=S.fq.trim().toLowerCase();
+  const list=rows.filter(r=>(S.ff==='all'||r.st===S.ff)&&(!q||r.name.toLowerCase().includes(q)));
+  const chip=(v,l,n)=>`<button class="chip-f ${S.ff===v?'on':''}" data-act="ff" data-v="${v}">${l}<b>${n}</b></button>`;
+  return `
+  <div class="inline" style="margin-bottom:10px"><input id="fq" class="search grow" data-bind="fq" placeholder="Search student by name" value="${esc(S.fq)}"></div>
+  <div class="filters">${chip('all','All',rows.length)}${chip('full','Paid',f.full)}${chip('partial','Partial',f.partial)}${chip('unpaid','Unpaid',f.unpaid)}</div>
+  <div class="fee-list">${list.map(feeRowHtml).join('')||emptyState('No students match this view.')}</div>
+  <div class="sticky-foot">
+    <div><span>Total collected</span><b>${fmt(f.collected)}</b></div>
+    <div><span>Expected</span><b>${fmt(f.expected)}</b></div>
+    <div><span>Outstanding</span><b>${fmt(r2(f.expected-f.collected))}</b></div>
+  </div>`;
+}
+
+function vExp(){
+  const list=docs('expenses').filter(e=>mkOf(e.date)===S.mk).sort((a,b)=>String(b.date).localeCompare(String(a.date))||(b.createdAt||0)-(a.createdAt||0));
+  const total=r2(sum(list,e=>e.amount));
+  const cats={};list.forEach(e=>{cats[e.category]=r2((cats[e.category]||0)+(+e.amount||0))});
+  const entries=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
+  return `
+  <div class="card sumcard"><div><p class="eyebrow">Total expenses · ${mkLabel(S.mk)}</p><div class="bignum">${fmt(total)}</div><p class="muted small">${list.length} entr${list.length===1?'y':'ies'} this month</p></div>
+    <button class="btn primary" data-act="exp-add">+ Add expense</button></div>
+  <div class="card"><h3>Breakdown by category</h3>
+    ${entries.map(([c,v])=>`<div class="bar-row"><div class="kv"><span>${esc(c)}</span><b>${fmt(v)}</b></div><div class="bar"><i style="width:${total?v/total*100:0}%"></i></div></div>`).join('')||'<p class="muted">No expenses this month.</p>'}
+  </div>
+  <div class="card list">${list.map(e=>`<div class="li"><div class="li-main"><div class="name">${esc(e.title)}</div><div class="meta">${esc(e.date)} · <span class="tag">${esc(e.category)}</span>${e.note?' · '+esc(e.note):''}</div></div><div class="li-right"><div class="amt">${fmt(e.amount)}</div><div class="mini"><button class="link" data-act="exp-edit" data-id="${e.id}">Edit</button><button class="link del" data-act="exp-del" data-id="${e.id}">Delete</button></div></div></div>`).join('')||emptyState('No expenses recorded for this month.')}</div>`;
+}
+
+function salRow(s){
+  return `<div class="li"><div class="li-main"><div class="name">${esc(tName(s.teacherId))}</div><div class="meta">${esc(s.date)} · Salary ${fmt(s.salary)} · Advance ${fmt(s.advance)}${s.note?' · '+esc(s.note):''}</div></div>
+  <div class="li-right"><div class="amt"><span class="meta">Net paid </span>${fmt(s.net)}</div><div class="mini"><button class="link" data-act="sal-edit" data-id="${s.id}">Edit</button><button class="link del" data-act="sal-del" data-id="${s.id}">Delete</button></div></div></div>`;
+}
+
+function vTeach(){
+  const ts=docs('teachers').sort(byName);
+  const sals=docs('salaries').filter(s=>s.mk===S.mk).sort(byDate).reverse();
+  const totNet=r2(sum(sals,s=>s.net));
+  return `
+  <div class="card sumcard"><div><p class="eyebrow">Net salaries paid · ${mkLabel(S.mk)}</p><div class="bignum">${fmt(totNet)}</div><p class="muted small">${sals.length} payment(s) this month · cash out</p></div>
+    <button class="btn primary" data-act="sal-add">+ Record salary</button></div>
+  <div class="head-row"><h3>Teachers</h3><button class="btn sm soft" data-act="tch-add">+ Add teacher</button></div>
+  <div class="cards">${ts.map(t=>{
+    const out=Math.max(0,advBal(t.id));
+    const paid=r2(sum(sals.filter(s=>s.teacherId===t.id),s=>s.net));
+    return `<div class="card tcard ${t.archived?'arch':''}" style="margin:0">
+      <div class="tc-top"><div><div class="name">${esc(t.name)}</div><div class="meta">${t.archived?'Archived':'Active'} · Paid this month ${fmt(paid)}</div></div>
+      ${out>0?`<span class="pill p-partial">Advance ${fmt(out)}</span>`:'<span class="pill p-free">No advance due</span>'}</div>
+      <p class="small ${out>0?'':'muted'}" style="margin-top:8px">${out>0?`Outstanding advance: <b>${fmt(out)}</b>`:'No outstanding advance'}</p>
+      <div class="row-btns">${t.archived?'':`<button class="btn sm primary" data-act="sal-add" data-id="${t.id}">Pay salary</button>`}
+      <button class="btn sm ghost" data-act="tch-edit" data-id="${t.id}">Rename</button>
+      ${t.archived?`<button class="btn sm ghost" data-act="tch-restore" data-id="${t.id}">Restore</button>`:`<button class="btn sm ghost danger-t" data-act="tch-arch" data-id="${t.id}">Archive</button>`}</div></div>`;
+  }).join('')||emptyState('No teachers yet.')}</div>
+  <div class="head-row"><h3>Salaries paid · ${mkLabel(S.mk)}</h3></div>
+  <div class="card list">${sals.map(salRow).join('')||emptyState('No salaries recorded for this month.')}</div>`;
+}
+
+function vNotes(){
+  const ts=docs('teachers').sort(byName);
+  const q=S.nq.trim().toLowerCase();
+  const list=docs('notes').filter(n=>{
+    const key=n.kind==='advance'?mkOf(n.date):(n.month||mkOf(n.date));
+    if(S.nsc==='month'&&key!==S.mk)return false;
+    if(S.nt!=='all'&&n.kind!==S.nt)return false;
+    if(S.nth&&(n.kind!=='advance'||n.teacherId!==S.nth))return false;
+    if(q){
+      const hit=(n.text||'').toLowerCase().includes(q)||(n.kind==='advance'&&tName(n.teacherId).toLowerCase().includes(q));
+      if(!hit)return false;
+    }
+    return true;
+  }).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+  const hist=ts.map(t=>{
+    const advs=docs('notes').filter(n=>n.kind==='advance'&&n.teacherId===t.id);
+    const deds=docs('salaries').filter(s=>s.teacherId===t.id&&(+s.advance>0));
+    const given=r2(sum(advs,n=>n.amount)),ded=r2(sum(deds,s=>s.advance)),out=Math.max(0,r2(given-ded));
+    const items=[
+      ...advs.map(n=>({d:n.date||'',t:'Advance given'+(n.text?' · '+esc(n.text):''),a:n.amount,sg:'+'})),
+      ...deds.map(s=>({d:s.date||s.mk||'',t:`Deducted from salary (${mkLabel(s.mk)})`,a:s.advance,sg:'−'}))
+    ].sort((a,b)=>b.d.localeCompare(a.d));
+    return `<details class="card hist"><summary><div><div class="name">${esc(t.name)}${t.archived?' <span class="tag">Archived</span>':''}</div><div class="meta">Given ${fmt(given)} · Deducted ${fmt(ded)}</div></div><span class="pill ${out>0?'p-partial':'p-free'}">${out>0?'Outstanding '+fmt(out):'Clear'}</span></summary>
+      <div class="body">${items.map(i=>`<div class="kv"><span>${esc(i.d)} · ${i.t}</span><b>${i.sg} ${fmt(i.a)}</b></div>`).join('')||'<p class="muted small">No advance history.</p>'}</div></details>`;
+  }).join('');
+  return `
+  <div class="inline wrap" style="margin-bottom:12px"><button class="btn primary" data-act="note-adv">+ Advance to teacher</button><button class="btn soft" data-act="note-gen">+ General note</button></div>
+  <div class="card">
+    <div class="grid2" style="gap:10px">
+      <input id="nq" data-bind="nq" placeholder="Search notes or teacher" value="${esc(S.nq)}">
+      <div class="two" style="gap:10px">
+        <select id="nt" data-bind="nt"><option value="all" ${S.nt==='all'?'selected':''}>All types</option><option value="advance" ${S.nt==='advance'?'selected':''}>Advances</option><option value="general" ${S.nt==='general'?'selected':''}>General notes</option></select>
+        <select id="nth" data-bind="nth"><option value="">All teachers</option>${ts.map(t=>`<option value="${t.id}" ${S.nth===t.id?'selected':''}>${esc(t.name)}</option>`).join('')}</select>
+      </div>
+      <select id="nsc" data-bind="nsc"><option value="month" ${S.nsc==='month'?'selected':''}>Only ${mkLabel(S.mk)}</option><option value="all" ${S.nsc==='all'?'selected':''}>All months</option></select>
+    </div>
+  </div>
+  <div class="card list">${list.map(n=>`<div class="note-item">
+      <div class="sumrow"><span class="kind ${n.kind}">${n.kind==='advance'?'Advance to teacher':'General note'}</span><span class="meta">${esc(n.date)}${n.kind==='general'&&n.month?' · tagged '+mkLabel(n.month):''}</span></div>
+      ${n.kind==='advance'?`<div style="margin-top:8px" class="name">${esc(tName(n.teacherId))} · <span style="color:var(--wn)">${fmt(n.amount)}</span></div>`:''}
+      <p class="small" style="margin:6px 0">${esc(n.text||'')}</p>
+      <div class="mini"><button class="link" data-act="note-edit" data-id="${n.id}">Edit</button><button class="link del" data-act="note-del" data-id="${n.id}">Delete</button></div>
+    </div>`).join('')||emptyState('No notes match these filters.')}</div>
+  <div class="head-row"><h3>Teacher advance history</h3></div>
+  ${hist||emptyState('No teachers yet.')}`;
+}
+
+function vStu(){
+  const all=docs('students');
+  const classes=[...new Set(all.map(s=>s.cls).filter(Boolean))].sort();
+  const q=S.sq.trim().toLowerCase();
+  const list=all.filter(s=>(S.sarch||!s.archived)&&(!S.scl||s.cls===S.scl)&&(!q||s.name.toLowerCase().includes(q))).sort(byName);
+  return `
+  <div class="inline" style="margin-bottom:10px"><input id="sq" class="search grow" data-bind="sq" placeholder="Search by name" value="${esc(S.sq)}"><button class="btn primary" data-act="stu-add">+ Add student</button></div>
+  <div class="inline wrap" style="margin-bottom:12px">
+    <select id="scl" data-bind="scl" style="flex:1"><option value="">All classes</option>${classes.map(c=>`<option value="${esc(c)}" ${S.scl===c?'selected':''}>${esc(c)}</option>`).join('')}</select>
+    <button class="btn ghost sm" data-act="stu-toggle">${S.sarch?'Hide archived':'Show archived'}</button>
+  </div>
+  <div class="card list">${list.map(s=>`<div class="li ${s.archived?'arch':''}">
+    <div class="li-main"><div class="name">${esc(s.name)} ${s.archived?'<span class="tag">Archived</span>':''}</div><div class="meta">${esc(s.cls)} · Monthly fee ${fmt(s.fee)}</div></div>
+    <div class="li-right"><div class="mini"><button class="link" data-act="stu-edit" data-id="${s.id}">Edit</button>${s.archived?`<button class="link" data-act="stu-restore" data-id="${s.id}">Restore</button>`:`<button class="link del" data-act="stu-arch" data-id="${s.id}">Archive</button>`}</div></div>
+  </div>`).join('')||emptyState('No students found.')}</div>`;
+}
+
+function vSet(){
+  const cloud=!!fb;
+  return `
+  <div class="card"><h3>Academy share</h3>
+    <p class="muted small">Academy share = total collected × share %. Teachers' pool = collected − academy share, split equally among active teachers. These are reference figures.</p>
+    <div class="inline" style="margin-top:10px"><label class="grow">Academy share (%)<input id="shareIn" inputmode="decimal" value="${sharePct()}"></label><button class="btn primary" data-act="share-save">Save</button></div>
+  </div>
+  <div class="card"><h3>Backup and restore</h3>
+    <p class="muted small">Backup downloads every record (students, fees, expenses, salaries, advances, notes, teachers, settings) as one file. Restore replaces all current data with a backup file.</p>
+    <div class="inline wrap" style="margin-top:10px"><button class="btn primary" data-act="backup">Download backup</button><button class="btn ghost" data-act="restore-pick">Restore from backup</button><input type="file" id="restoreFile" accept="application/json,.json" hidden></div>
+  </div>
+  <div class="card"><h3>Install on your phone</h3>
+    <p class="muted small">Android or Chrome: tap Install. iPhone Safari: Share, then Add to Home Screen.</p>
+    <button class="btn soft" data-act="install">Install app</button>
+  </div>
+  <div class="card"><h3>Sync</h3>
+    <p>Status: <b>${syncState()==='ok'?'Up to date':syncState()==='syncing'?'Syncing...':'Offline'}</b></p>
+    <p class="muted small">${cloud?'Connected to the shared cloud database. Changes appear on every open device within seconds.':'Cloud sync is not configured yet, so data is kept on this device only.'}</p>
+  </div>
+  <p class="muted center small">Academy Fee Manager · Amounts in PKR</p>`;
+}
+
+const SCR={dashboard:vDash,fees:vFees,expenses:vExp,teachers:vTeach,notes:vNotes,students:vStu,settings:vSet};
+
+function chrome(){
+  const st=syncState();
+  chipEl.className='chip '+st;
+  chipEl.textContent={ok:'Up to date',syncing:'Syncing...',offline:'Offline'}[st];
+  $('#pbar').style.display=PERIOD.includes(S.screen)?'flex':'none';
+  const cur=sessionStart(S.mk);
+  const ms=$('#mSel'),ss=$('#sSel');
+  const key=cur+'|'+S.mk;
+  if(ms.dataset.key!==key){
+    let so='';const sy=sessionStart(mkNow());
+    for(let y=sy-3;y<=sy+2;y++)so+=`<option value="${y}" ${y===cur?'selected':''}>${sessLabel(y)}</option>`;
+    ss.innerHTML=so;
+    let mo='';FY.forEach(m=>{const k=mkInSession(cur,m);mo+=`<option value="${k}" ${k===S.mk?'selected':''}>${MN[m-1]} ${k.slice(0,4)}</option>`});
+    ms.innerHTML=mo;
+    ms.dataset.key=key;
+  }
+  document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('on',b.dataset.nav===S.screen));
+  $('#pageTitle').textContent=SCREENS.find(s=>s[0]===S.screen)[1];
+}
+
+function render(){
+  const ae=document.activeElement;
+  if(ae&&ae.dataset&&ae.dataset.hold&&view.contains(ae)){held=true;return}
+  held=false;
+  const fid=ae&&ae.id&&view.contains(ae)?ae.id:null;
+  const cs=fid&&ae.selectionStart!=null?ae.selectionStart:null;
+  view.innerHTML=SCR[S.screen]();
+  if(fid){
+    const el=document.getElementById(fid);
+    if(el){el.focus({preventScroll:true});if(cs!=null){try{el.setSelectionRange(cs,cs)}catch(_){}}}
+  }
+  chrome();
+}
+
+function toast(msg,type){
+  toastEl.className='toast show '+(type||'');
+  toastEl.textContent=msg;
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>toastEl.classList.remove('show'),2600);
+}
+
+/* ================= MODALS ================= */
+function openModal(title,body,onSave,o={}){
+  root.innerHTML=`<div class="overlay"><form class="sheet" id="mf" autocomplete="off" novalidate>
+    <div class="sheet-head"><h3>${esc(title)}</h3><button type="button" class="icon-btn" data-act="close" aria-label="Close">✕</button></div>
+    <div class="sheet-body">${body}<p class="err" id="mErr"></p></div>
+    <div class="sheet-foot"><button type="button" class="btn ghost" data-act="close">Cancel</button><button class="btn primary" type="submit">${o.ok||'Save'}</button></div>
+  </form></div>`;
+  const f=$('#mf');
+  if(o.onInput){f.addEventListener('input',()=>o.onInput(f));f.addEventListener('change',()=>o.onInput(f))}
+  if(o.onOpen)o.onOpen(f);
+  f.addEventListener('submit',e=>{
+    e.preventDefault();
+    const err=onSave(new FormData(f));
+    if(err){$('#mErr').textContent=err;return}
+    closeModal();
+  });
+}
+function closeModal(){
+  const r=askRes;askRes=null;
+  root.innerHTML='';
+  if(r)r(false);
+}
+function ask(msg,label){
+  return new Promise(res=>{
+    askRes=res;
+    root.innerHTML=`<div class="overlay"><div class="sheet sm">
+      <div class="sheet-head"><h3>Please confirm</h3></div>
+      <div class="sheet-body"><p class="muted">${esc(msg)}</p></div>
+      <div class="sheet-foot"><button class="btn ghost" data-act="ans-no">Cancel</button><button class="btn danger" data-act="ans-yes">${esc(label||'Delete')}</button></div>
+    </div></div>`;
+  });
+}
+
+function expenseModal(id){
+  const e=id?DB.expenses[id]:{date:defDate(),title:'',category:CATS[0],amount:'',note:''};
+  openModal(id?'Edit expense':'Add expense',`
+    <label>Date<input type="date" name="date" value="${esc(e.date)}" required></label>
+    <label>Title<input name="title" maxlength="80" value="${esc(e.title)}" placeholder="e.g. Electricity bill" required></label>
+    <label>Category<select name="category">${CATS.map(c=>`<option ${c===e.category?'selected':''}>${esc(c)}</option>`).join('')}</select></label>
+    <label>Amount (PKR)<input name="amount" inputmode="decimal" value="${e.amount}" placeholder="0"></label>
+    <label>Note (optional)<textarea name="note" rows="2" maxlength="300">${esc(e.note||'')}</textarea></label>`,
+  fd=>{
+    const date=fd.get('date'),title=(fd.get('title')||'').trim(),amt=parseAmt(fd.get('amount'),{zero:false});
+    if(!validDate(date))return 'Choose a valid date';
+    if(!title)return 'Enter a title';
+    if(amt===null)return 'Enter an amount greater than 0 (numbers only)';
+    save('expenses',id||uid(),{date,title,category:fd.get('category'),amount:amt,note:(fd.get('note')||'').trim(),createdAt:e.createdAt||Date.now()});
+    toast('Expense saved');
+    return null;
+  });
+}
+
+function teacherModal(id){
+  const t=id?DB.teachers[id]:{name:''};
+  openModal(id?'Rename teacher':'Add teacher',`<label>Teacher name<input name="name" maxlength="40" value="${esc(t.name)}" placeholder="e.g. Sir Imran" required></label>`,
+  fd=>{
+    const name=(fd.get('name')||'').trim();
+    if(!name)return 'Enter a name';
+    if(Object.entries(DB.teachers).some(([k,v])=>k!==id&&String(v.name).toLowerCase()===name.toLowerCase()))return 'A teacher with this name already exists';
+    save('teachers',id||uid(),{...t,name,archived:!!t.archived,createdAt:t.createdAt||Date.now()});
+    toast('Teacher saved');
+    return null;
+  });
+}
+
+function studentModal(id){
+  const s=id?DB.students[id]:{name:'',cls:'',fee:''};
+  const classes=[...new Set(Object.values(DB.students).map(x=>x.cls).filter(Boolean))].sort();
+  openModal(id?'Edit student':'Add student',`
+    <label>Name<input name="name" maxlength="60" value="${esc(s.name)}" placeholder="Student name" required></label>
+    <label>Class<input name="cls" list="clsList" maxlength="30" value="${esc(s.cls)}" placeholder="e.g. 10th" required></label>
+    <datalist id="clsList">${classes.map(c=>`<option value="${esc(c)}">`).join('')}</datalist>
+    <label>Monthly fee (PKR)<input name="fee" inputmode="decimal" value="${s.fee??''}" placeholder="0"></label>
+    <p class="hint">Changing the fee never changes months already recorded.</p>`,
+  fd=>{
+    const name=(fd.get('name')||'').trim(),cls=(fd.get('cls')||'').trim();
+    const fee=parseAmt(fd.get('fee'));
+    if(!name)return 'Enter the student name';
+    if(!cls)return 'Enter the class';
+    if(fee===null)return 'Enter a valid monthly fee (0 or more)';
+    if(Object.entries(DB.students).some(([k,v])=>k!==id&&!v.archived&&String(v.name).toLowerCase()===name.toLowerCase()))return 'An active student with this name already exists';
+    save('students',id||uid(),{...s,name,cls,fee,archived:!!s.archived,createdAt:s.createdAt||Date.now()});
+    toast('Student saved');
+    return null;
+  });
+}
+
+function advanceModal(id){
+  const n=id?DB.notes[id]:{teacherId:'',amount:'',date:defDate(),text:''};
+  openModal(id?'Edit advance':'Advance to teacher',`
+    <label>Teacher<select name="teacher" required>${teacherOptions(n.teacherId,true)}</select></label>
+    <label>Amount (PKR)<input name="amount" inputmode="decimal" value="${n.amount}" placeholder="0"></label>
+    <label>Date<input type="date" name="date" value="${esc(n.date)}" required></label>
+    <label>Note (optional)<textarea name="text" rows="2" maxlength="300">${esc(n.text||'')}</textarea></label>`,
+  fd=>{
+    const tid=fd.get('teacher');
+    if(!DB.teachers[tid])return 'Choose a teacher';
+    const amt=parseAmt(fd.get('amount'),{zero:false});
+    if(amt===null)return 'Enter an amount greater than 0';
+    const date=fd.get('date');
+    if(!validDate(date))return 'Choose a valid date';
+    save('notes',id||uid(),{kind:'advance',teacherId:tid,amount:amt,date,text:(fd.get('text')||'').trim(),createdAt:n.createdAt||Date.now()});
+    toast('Advance saved');
+    return null;
+  });
+}
+
+function generalModal(id){
+  const n=id?DB.notes[id]:{date:defDate(),text:'',month:''};
+  openModal(id?'Edit note':'General note',`
+    <label>Date<input type="date" name="date" value="${esc(n.date)}" required></label>
+    <label>Note<textarea name="text" rows="3" maxlength="500" required>${esc(n.text||'')}</textarea></label>
+    <label>Month tag (optional)<select name="month">${monthOpts(n.month||'',true)}</select></label>`,
+  fd=>{
+    const date=fd.get('date'),text=(fd.get('text')||'').trim();
+    if(!validDate(date))return 'Choose a valid date';
+    if(!text)return 'Write the note text';
+    save('notes',id||uid(),{kind:'general',date,text,month:fd.get('month')||'',createdAt:n.createdAt||Date.now()});
+    toast('Note saved');
+    return null;
+  });
+}
+
+function salaryModal(id,presetTid){
+  const s=id?DB.salaries[id]:{teacherId:presetTid||'',mk:S.mk,salary:'',advance:'',date:defDate(),note:''};
+  if(!s)return;
+  const init=id?s.advance:(s.teacherId?Math.max(0,advBal(s.teacherId,id)):'');
+  const refresh=f=>{
+    const tid=f.querySelector('[name=teacher]').value;
+    const sal=parseAmt(f.querySelector('[name=salary]').value)??0;
+    const adv=parseAmt(f.querySelector('[name=advance]').value)??0;
+    const out=tid?Math.max(0,advBal(tid,id)):0;
+    f.querySelector('#advInfo').textContent=tid?`Outstanding advance: ${fmt(out)}`:'Choose a teacher to see the outstanding advance.';
+    let warn='';
+    if(adv>sal)warn='Advance deducted is more than the salary';
+    else if(adv>out)warn='More than the outstanding advance';
+    f.querySelector('#netPrev').innerHTML=`Net paid to teacher: <b>${fmt(r2(sal-adv))}</b>${warn?`<span class="warnTxt">${warn}</span>`:''}`;
+  };
+  openModal(id?'Edit salary payment':'Record salary paid',`
+    <label>Teacher<select name="teacher" required>${teacherOptions(s.teacherId,true)}</select></label>
+    <p class="advinfo" id="advInfo"></p>
+    <label>Month<select name="month" required>${monthOpts(s.mk,false)}</select></label>
+    <div class="two">
+      <label>Salary (PKR)<input name="salary" inputmode="decimal" value="${s.salary}" placeholder="0"></label>
+      <label>Advance deducted (PKR)<input name="advance" inputmode="decimal" value="${init}" placeholder="0"></label>
+    </div>
+    <div class="netbox" id="netPrev"></div>
+    <div class="two">
+      <label>Date<input type="date" name="date" value="${esc(s.date)}" required></label>
+      <label>Note (optional)<input name="note" maxlength="200" value="${esc(s.note||'')}"></label>
+    </div>`,
+  fd=>{
+    const tid=fd.get('teacher');
+    if(!DB.teachers[tid])return 'Choose a teacher';
+    const mk=fd.get('month');
+    if(!/^\d{4}-\d{2}$/.test(mk||''))return 'Choose a month';
+    const sal=parseAmt(fd.get('salary'));
+    if(sal===null)return 'Enter a valid salary (0 or more)';
+    const adv=parseAmt(fd.get('advance'));
+    if(adv===null)return 'Enter a valid advance deducted (0 or more)';
+    if(adv>sal)return 'Advance deducted cannot be more than the salary';
+    const out=Math.max(0,advBal(tid,id));
+    if(adv>out)return `Advance deducted cannot exceed the outstanding advance of ${fmt(out)}`;
+    const date=fd.get('date');
+    if(!validDate(date))return 'Choose a valid date';
+    const net=r2(sal-adv);
+    save('salaries',id||uid(),{teacherId:tid,mk,salary:sal,advance:adv,net,date,note:(fd.get('note')||'').trim(),createdAt:s.createdAt||Date.now()});
+    toast('Salary recorded. Net paid '+fmt(net));
+    return null;
+  },{
+    onOpen:f=>{f.dataset.tid=f.querySelector('[name=teacher]').value;refresh(f)},
+    onInput:f=>{
+      const tid=f.querySelector('[name=teacher]').value;
+      if(f.dataset.tid!==tid){
+        f.dataset.tid=tid;
+        f.querySelector('[name=advance]').value=tid?Math.max(0,advBal(tid,id)):'';
+      }
+      refresh(f);
+    }
+  });
+}
+
+/* ================= EXPORT / BACKUP ================= */
+function csvCell(v){const s=String(v??'');return /[",\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
+function download(blob,name){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+function exportCSV(){
+  const R=reportData();
+  const rows=[['Academy Fee Manager report',mkLabel(S.mk)],[],['SUMMARY'],...summaryRows(R),[],['FEES'],['Student','Class','Monthly fee','Received','Remaining','Status']];
+  R.f.rows.forEach(r=>rows.push([r.name,r.cls,r.expected,r.received,Math.max(0,r.left),STL[r.st]]));
+  rows.push([],['EXPENSES'],['Date','Title','Category','Amount','Note']);
+  R.exps.forEach(e=>rows.push([e.date,e.title,e.category,e.amount,e.note||'']));
+  rows.push([],['SALARIES PAID'],['Teacher','Date','Salary','Advance deducted','Net paid','Note']);
+  R.sals.forEach(s=>rows.push([tName(s.teacherId),s.date,s.salary,s.advance,s.net,s.note||'']));
+  rows.push([],['ADVANCES GIVEN'],['Teacher','Date','Amount','Note']);
+  R.advs.forEach(n=>rows.push([tName(n.teacherId),n.date,n.amount,n.text||'']));
+  const csv='\uFEFF'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n');
+  download(new Blob([csv],{type:'text/csv;charset=utf-8'}),`academy-report-${S.mk}.csv`);
+  toast('CSV downloaded');
+}
+function reportHTML(){
+  const R=reportData();
+  const tbl=(head,body)=>`<table><tr>${head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr>${body.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</table>`;
+  return `<h1>Academy Fee Manager · ${esc(mkLabel(S.mk))}</h1><p>Generated ${esc(new Date().toLocaleString())}</p>
+  <h2>Summary</h2>${tbl(['Item','Amount'],summaryRows(R).map(([k,v])=>[k,fmt(v)]))}
+  <h2>Fees</h2>${tbl(['Student','Class','Monthly fee','Received','Remaining','Status'],R.f.rows.map(r=>[r.name,r.cls,fmt(r.expected),fmt(r.received),fmt(Math.max(0,r.left)),STL[r.st]]))}
+  <h2>Expenses</h2>${tbl(['Date','Title','Category','Amount'],R.exps.map(e=>[e.date,e.title,e.category,fmt(e.amount)]))}
+  <h2>Salaries paid</h2>${tbl(['Teacher','Date','Salary','Advance','Net paid'],R.sals.map(s=>[tName(s.teacherId),s.date,fmt(s.salary),fmt(s.advance),fmt(s.net)]))}
+  <h2>Advances given</h2>${tbl(['Teacher','Date','Amount','Note'],R.advs.map(n=>[tName(n.teacherId),n.date,fmt(n.amount),n.text||'']))}`;
+}
+function exportPDF(){
+  $('#printArea').innerHTML=reportHTML();
+  setTimeout(()=>window.print(),50);
+}
+function backup(){
+  const data={};COLS.forEach(c=>data[c]=DB[c]);
+  const blob=new Blob([JSON.stringify({app:'academy-fee-manager',version:1,exportedAt:new Date().toISOString(),data},null,2)],{type:'application/json'});
+  download(blob,`academy-backup-${today()}.json`);
+  toast('Backup downloaded');
+}
+async function restoreFile(file){
+  let j;
+  try{j=JSON.parse(await file.text())}catch(e){return toast('This file is not a valid backup','err')}
+  const d=j&&j.data;
+  if(!d||typeof d!=='object'||!COLS.some(c=>d[c]&&typeof d[c]==='object'))return toast('Backup file has no academy data','err');
+  if(!await ask('Restore replaces ALL current data on every device with this backup. Continue?','Restore backup'))return;
+  const clean={};
+  COLS.forEach(c=>{clean[c]=(d[c]&&typeof d[c]==='object')?d[c]:{}});
+  if(fb){
+    const ops=[];
+    COLS.forEach(c=>{
+      Object.keys(DB[c]).forEach(id=>{if(!Object.prototype.hasOwnProperty.call(clean[c],id))ops.push([c,id,null])});
+      Object.entries(clean[c]).forEach(([id,v])=>ops.push([c,id,v]));
+    });
+    ops.push(['meta','seed',{seededAt:new Date().toISOString(),restored:true}]);
+    for(let i=0;i<ops.length;i+=400){
+      const b=fb.batch();
+      ops.slice(i,i+400).forEach(([c,id,v])=>{const ref=fb.collection(c).doc(id);v===null?b.delete(ref):b.set(ref,v)});
+      b.commit().catch(e=>toast('Restore failed: '+e.message,'err'));
+    }
+    seeded=true;
+  }
+  COLS.forEach(c=>DB[c]=clean[c]);
+  persistLocal();
+  render();
+  toast('Backup restored');
+}
+
+/* ================= PWA ================= */
+function setupPWA(){
+  try{
+    const base=location.href.split('#')[0];
+    const icon=s=>{
+      const c=document.createElement('canvas');c.width=c.height=s;
+      const x=c.getContext('2d');
+      const g=x.createLinearGradient(0,0,s,s);g.addColorStop(0,'#2dd4bf');g.addColorStop(1,'#0f766e');
+      x.fillStyle=g;x.fillRect(0,0,s,s);
+      x.fillStyle='#fff';x.font=`800 ${s*0.42}px system-ui, sans-serif`;x.textAlign='center';x.textBaseline='middle';
+      x.fillText('AF',s/2,s/2+s*0.03);
+      return c.toDataURL('image/png');
+    };
+    const i192=icon(192),i512=icon(512);
+    const manifest={name:'Academy Fee Manager',short_name:'Fee Manager',start_url:base,scope:base,display:'standalone',background_color:'#f1f7f7',theme_color:'#0f766e',
+      icons:[{src:i192,sizes:'192x192',type:'image/png'},{src:i512,sizes:'512x512',type:'image/png'}]};
+    const link=document.createElement('link');link.rel='manifest';
+    link.href=URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'}));
+    document.head.appendChild(link);
+    const ai=document.createElement('link');ai.rel='apple-touch-icon';ai.href=i192;document.head.appendChild(ai);
+    const fi=document.createElement('link');fi.rel='icon';fi.href=i192;document.head.appendChild(fi);
+    if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
+      const sw="self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));";
+      navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'text/javascript'}))).catch(()=>{});
+    }
+  }catch(e){console.warn('PWA setup skipped',e)}
+}
+
+/* ================= EVENTS ================= */
+document.addEventListener('click',async e=>{
+  const t=e.target;
+  if(t.classList&&t.classList.contains('overlay')){closeModal();return}
+  const el=t.closest('[data-act],[data-nav]');
+  if(!el)return;
+  if(el.dataset.nav){S.screen=el.dataset.nav;render();window.scrollTo({top:0,behavior:'smooth'});return}
+  const a=el.dataset.act,id=el.dataset.id,v=el.dataset.v;
+  switch(a){
+    case 'close':closeModal();break;
+    case 'ans-no':closeModal();break;
+    case 'ans-yes':{const r=askRes;askRes=null;root.innerHTML='';if(r)r(true);break}
+    case 'ff':S.ff=v;render();break;
+    case 'fee-save':saveFee(id,$('#amt_'+id).value);break;
+    case 'fee-full':{
+      const r=feeRows(S.mk).find(x=>x.id===id);
+      if(!r||r.expected<=0)break;
+      save('payments',id+'__'+S.mk,{sid:id,mk:S.mk,received:r.expected,expected:r.expected,updatedAt:Date.now()});
+      toast(`${r.name}: marked paid in full`);
+      break;
+    }
+    case 'fee-clear':{
+      const r=feeRows(S.mk).find(x=>x.id===id);
+      removeDoc('payments',id+'__'+S.mk);
+      toast(`${r?r.name:'Student'}: cleared`);
+      break;
+    }
+    case 'open-opening':{
+      const b=balanceFor(S.mk);
+      openModal('Opening balance · '+mkLabel(S.mk),`<label>Opening balance (PKR)<input name="op" inputmode="decimal" value="${b.open}" placeholder="0"></label>
+        <p class="hint">Leave the automatic value by using "Reset" on the dashboard. Automatic opening = previous month's closing balance.</p>`,
+      fd=>{
+        const n=parseAmt(fd.get('op'));
+        if(n===null)return 'Enter a valid amount (0 or more)';
+        save('monthMeta',S.mk,{opening:n,updatedAt:Date.now()});
+        toast('Opening balance saved');
+        return null;
+      });
+      break;
+    }
+    case 'reset-opening':
+      if(await ask('Reset this month\'s opening balance to the automatic carry-forward from the previous month?','Reset')){removeDoc('monthMeta',S.mk);toast('Opening balance reset to automatic')}
+      break;
+    case 'csv':exportCSV();break;
+    case 'pdf':exportPDF();break;
+    case 'exp-add':expenseModal();break;
+    case 'exp-edit':expenseModal(id);break;
+    case 'exp-del':if(await ask('Delete this expense permanently?')){removeDoc('expenses',id);toast('Expense deleted')}break;
+    case 'tch-add':teacherModal();break;
+    case 'tch-edit':teacherModal(id);break;
+    case 'tch-arch':if(await ask(`Archive ${tName(id)}? Past records are kept and the teacher is removed from the share count.`,'Archive')){save('teachers',id,{...DB.teachers[id],archived:true});toast('Teacher archived')}break;
+    case 'tch-restore':save('teachers',id,{...DB.teachers[id],archived:false});toast('Teacher restored');break;
+    case 'sal-add':salaryModal(null,id);break;
+    case 'sal-edit':salaryModal(id);break;
+    case 'sal-del':if(await ask('Delete this salary record? The cash will return to the month balance.')){removeDoc('salaries',id);toast('Salary record deleted')}break;
+    case 'note-adv':advanceModal();break;
+    case 'note-gen':generalModal();break;
+    case 'note-edit':DB.notes[id]&&DB.notes[id].kind==='advance'?advanceModal(id):generalModal(id);break;
+    case 'note-del':if(await ask('Delete this note permanently?')){removeDoc('notes',id);toast('Note deleted')}break;
+    case 'stu-add':studentModal();break;
+    case 'stu-edit':studentModal(id);break;
+    case 'stu-arch':if(await ask(`Archive ${DB.students[id].name}? They will be hidden from the Fees screen. Past months keep their records.`,'Archive')){save('students',id,{...DB.students[id],archived:true});toast('Student archived')}break;
+    case 'stu-restore':save('students',id,{...DB.students[id],archived:false});toast('Student restored');break;
+    case 'stu-toggle':S.sarch=!S.sarch;render();break;
+    case 'share-save':{
+      const n=parseAmt($('#shareIn').value);
+      if(n===null||n>100)return toast('Enter a share between 0 and 100','err');
+      save('settings','main',{sharePct:n});
+      toast('Academy share saved');
+      break;
+    }
+    case 'backup':backup();break;
+    case 'restore-pick':{const inp=document.getElementById('restoreFile');if(inp)inp.click();break}
+    case 'install':
+      if(deferredPrompt){deferredPrompt.prompt();deferredPrompt=null}
+      else toast('Use your browser menu and choose "Install app" or "Add to Home Screen"','info');
+      break;
+  }
+});
+
+document.addEventListener('input',e=>{
+  const k=e.target.dataset&&e.target.dataset.bind;
+  if(!k)return;
+  S[k]=e.target.value;
+  render();
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.id==='mSel'){S.mk=t.value;render()}
+  else if(t.id==='sSel'){S.mk=mkInSession(+t.value,+S.mk.slice(5));render()}
+  else if(t.id==='restoreFile'){const f=t.files[0];t.value='';if(f)restoreFile(f)}
+  else if(t.dataset&&t.dataset.bind){S[t.dataset.bind]=t.value;render()}
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('amt-in')){
+    e.preventDefault();
+    saveFee(e.target.id.slice(4),e.target.value);
+  }
+});
+document.addEventListener('focusout',e=>{
+  if(e.target.dataset&&e.target.dataset.hold){
+    setTimeout(()=>{if(held)render()},350);
+  }
+});
+window.addEventListener('online',()=>{chrome();if(fb&&!seeded)seedCloud()});
+window.addEventListener('offline',()=>chrome());
+window.addEventListener('storage',e=>{if(e.key===APP_KEY&&!fb){loadLocal();render()}});
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e});
+
+/* ================= BOOT ================= */
+function boot(){
+  const nav=SCREENS.map(([k,l,i])=>`<button data-nav="${k}"><span class="ico">${i}</span><span>${l}</span></button>`).join('');
+  $('#bottomNav').innerHTML=nav;
+  $('#sideNav').innerHTML=nav;
+  if(FIREBASE_CONFIG.apiKey&&window.firebase){
+    try{
+      firebase.initializeApp(FIREBASE_CONFIG);
+      fb=firebase.firestore();
+      fb.enablePersistence({synchronizeTabs:true}).catch(()=>{});
+    }catch(e){console.error(e);fb=null}
+  }
+  if(fb){listen();seedCloud()}
+  else{loadLocal()}
+  setupPWA();
+  render();
+}
+boot();
+})();
+</script>
+</body>
+</html>
